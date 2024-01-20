@@ -8,6 +8,7 @@ import com.lead.entity.Lead;
 import com.lead.exception.ErrorCodes;
 import com.lead.exception.LeadAlreadyExistException;
 import com.lead.exception.LeadNotFoundException;
+import com.lead.exception.LeadServiceException;
 import com.lead.repository.LeadRepository;
 import com.lead.service.LeadService;
 import com.lead.utils.LeadConstants;
@@ -48,7 +49,7 @@ public class LeadServiceImpl implements LeadService {
                 leadRepository.save(lead1);
                 return saveResponse();
             } catch (Exception e) {
-                throw new RuntimeException("Error during saving the data");
+                throw new LeadServiceException(ErrorCodes.FAILED_TO_SAVE_DATA_IN_RDB, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         }
@@ -84,7 +85,8 @@ public class LeadServiceImpl implements LeadService {
             leadFetchResponse.setData(dataList);
             return leadFetchResponse;
         } else {
-            throw new LeadNotFoundException(ErrorCodes.LEAD_DATA_NOT_FOUND, HttpStatus.NOT_FOUND);        }
+            throw new LeadNotFoundException(ErrorCodes.LEAD_DATA_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
 
     }
 
