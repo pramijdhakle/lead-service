@@ -27,6 +27,11 @@ public class LeadServiceImpl implements LeadService {
     @Autowired
     private LeadRepository leadRepository;
 
+    /**
+     * This is Create Lead method
+     * @param leadRequest
+     * @return
+     */
     @Override
     public LeadSaveResponse createLead(LeadRequest leadRequest) {
 
