@@ -11,4 +11,5 @@ public interface LeadRepository extends JpaRepository<Lead, Integer> {
     List<Lead> findByMobileNumber(Long mobileNumber);
 
     Optional<Lead> findByLeadId(Integer leadId);
+
 }

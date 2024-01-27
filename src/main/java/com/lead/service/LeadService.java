@@ -1,8 +1,8 @@
 package com.lead.service;
 
-import com.lead.dto.LeadFetchResponse;
-import com.lead.dto.LeadRequest;
-import com.lead.dto.LeadSaveResponse;
+import com.lead.dto.*;
+
+import java.util.List;
 
 public interface LeadService {
 
@@ -10,5 +10,8 @@ public interface LeadService {
 
    LeadFetchResponse fechAllLeads(Long mobileNumber);
 
+    LeadDataUpdateResponse updateLeadData(LeadUpdateRequest leadRequest , Integer leadId);
+
+    List<Data> getAllLeads();
 
 }

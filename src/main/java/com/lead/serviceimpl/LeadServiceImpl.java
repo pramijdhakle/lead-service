@@ -1,9 +1,6 @@
 package com.lead.serviceimpl;
 
-import com.lead.dto.Data;
-import com.lead.dto.LeadFetchResponse;
-import com.lead.dto.LeadRequest;
-import com.lead.dto.LeadSaveResponse;
+import com.lead.dto.*;
 import com.lead.entity.Lead;
 import com.lead.exception.ErrorCodes;
 import com.lead.exception.LeadAlreadyExistException;
@@ -29,6 +26,7 @@ public class LeadServiceImpl implements LeadService {
 
     /**
      * This is Create Lead method
+     *
      * @param leadRequest
      * @return
      */
@@ -93,6 +91,66 @@ public class LeadServiceImpl implements LeadService {
             throw new LeadNotFoundException(ErrorCodes.LEAD_DATA_NOT_FOUND, HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @Override
+    public LeadDataUpdateResponse updateLeadData(LeadUpdateRequest leadRequest, Integer leadId) {
+        Optional<Lead> byLeadId = leadRepository.findByLeadId(leadId);
+        if (byLeadId.isPresent()) {
+            Lead lead = byLeadId.get();
+            saveUpdatedLeadData(lead, leadRequest);
+            return leadDataUpdatedResponse();
+        } else {
+            throw new LeadNotFoundException(ErrorCodes.LEAD_DATA_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @Override
+    public List<Data> getAllLeads() {
+        List<Data> leadDataList = new ArrayList<>();
+        Optional<List<Lead>> allLeads = Optional.ofNullable(leadRepository.findAll());
+        if (allLeads.isPresent()) {
+            for (Lead lead : allLeads.get()) {
+                Data data = new Data();
+                data.setLeadId(lead.getLeadId());
+                data.setFirstName(lead.getFirstName());
+                data.setMiddleName(lead.getMiddleName());
+                data.setLastName(lead.getLastName());
+                data.setEmail(lead.getEmail());
+                data.setGender(lead.getGender());
+                data.setDob(lead.getDob());
+                data.setMobileNumber(lead.getMobileNumber());
+                leadDataList.add(data);
+            }
+            return leadDataList;
+        } else {
+            throw new LeadNotFoundException(ErrorCodes.LEAD_DATA_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    private void saveUpdatedLeadData(Lead lead, LeadUpdateRequest leadRequest) {
+        lead.setFirstName(leadRequest.getFirstName() != null ? leadRequest.getFirstName() : lead.getFirstName());
+        lead.setMiddleName(leadRequest.getMiddleName() != null ? leadRequest.getMiddleName() : lead.getMiddleName());
+        lead.setLastName(leadRequest.getLastName() != null ? leadRequest.getLastName() : lead.getLastName());
+        lead.setEmail(leadRequest.getEmail() != null ? leadRequest.getEmail() : lead.getEmail());
+        lead.setDob(leadRequest.getDob() != null ? leadRequest.getDob() : lead.getDob());
+        lead.setGender(leadRequest.getGender() != null ? leadRequest.getGender() : lead.getGender());
+        lead.setMobileNumber(leadRequest.getMobileNumber() != null ? leadRequest.getMobileNumber() : lead.getMobileNumber());
+        try {
+            leadRepository.save(lead);
+        } catch (Exception e) {
+            throw new LeadServiceException(ErrorCodes.FAILED_TO_SAVE_DATA_IN_RDB, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
+
+    private LeadDataUpdateResponse leadDataUpdatedResponse() {
+        LeadDataUpdateResponse response = new LeadDataUpdateResponse();
+        response.setStatus(LeadConstants.SUCCESS);
+        response.setMessage(LeadConstants.DATA_UPDATED_MESSAGE);
+        return response;
     }
 
 
